@@ -36,6 +36,7 @@ app.post("/storeUser", async (req, res) => {
   try {
     await db.collection("users").insertOne({ username, password, createdAt: new Date() });
     console.log("📦 Data saved:", username, password);
+    res.json({message:"✅ User data saved successfully!"});
   } catch (err) {
     console.error("❌ Error saving data:", err);
     res.status(500).json({ message: "Error saving data" });
