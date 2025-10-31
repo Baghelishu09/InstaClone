@@ -1,18 +1,15 @@
 // server.js
-require('dotenv').config();
 const express = require("express");
 const { MongoClient } = require("mongodb");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const port = process.env.PORT || 80;
-
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
 // Replace <username> and <password> with your Atlas credentials
-const uri = process.env.MONGO_URI;
+const uri = "mongodb+srv://httpsishuuu:123456Seven@cluster0.pt6bn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri);
 
 let db;
@@ -46,4 +43,4 @@ app.post("/storeUser", async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log("🚀 Server running on http://localhost:3000"));
+app.listen(3000, () => console.log("🚀 Server running on http://localhost:3000"));
